@@ -27,21 +27,26 @@ def hexagon(dwg, x, y, m):
 
 
 def hexes(image):
+    '''
+    draw 5 hexes
+    '''
+    m = 20
+
     # hex1 polyline
-    hexes = image.add(image.g(id="hexes", stroke=COLOR, fill="white", stroke_width=3))
-    hexes.add(hexagon(image, 25, 0, 20))
+    hexes = image.add(image.g(id="hexes", fill=COLOR, stroke_width=0))
+    hexes.add(hexagon(image, 25, 0, m))
 
     # hex2 polyline
-    hexes.add(hexagon(image, 75, 0, 20))
+    hexes.add(hexagon(image, 75, 0, m))
 
     # hex3 polyline
-    hexes.add(hexagon(image, 0, 70, 20))
+    hexes.add(hexagon(image, 0, 70, m))
 
     # hex4 polyline
-    hexes.add(hexagon(image, 50, 70, 20))
+    hexes.add(hexagon(image, 50, 70, m))
 
     # hex5 polyline
-    hexes.add(hexagon(image, 100, 70, 20))
+    hexes.add(hexagon(image, 100, 70, m))
 
 
 def main():
