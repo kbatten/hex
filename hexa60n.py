@@ -10,17 +10,15 @@ import sys
 import svgwrite
 
 
+COLOR = "#9199b4"
+
+
 def main():
     image = svgwrite.Drawing("hexa60n.svg")
 
-    lines = image.add(image.g(id="lines", stroke="#9199b4", stroke_width=3))
+    lines = image.add(image.g(id="lines", stroke=COLOR, fill="white", stroke_width=3))
 
-    lines.add(image.line(start=(5, 0), end=(0, 5)))
-    lines.add(image.line(start=(0, 5), end=(0, 10)))
-    lines.add(image.line(start=(0, 10), end=(5, 15)))
-    lines.add(image.line(start=(5, 15), end=(10, 10)))
-    lines.add(image.line(start=(10, 10), end=(10, 5)))
-    lines.add(image.line(start=(10, 5), end=(5, 0)))
+    lines.add(image.polygon(points=[(5,0), (0,5), (0,10), (5,15), (10,10), (10,5), (5,0)]))
 
     image.save()
 
