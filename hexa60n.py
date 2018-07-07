@@ -15,38 +15,62 @@ import svgwrite
 COLOR = "#9199b4"
 
 
-def hexagon(dwg, x, y, m):
+def hexagon(x, y, m):
     '''
     generate a hexagon
 
     '''
-    # TODO: polyline with specific edge removed)
     base_shape = ((1,0), (0,1), (0,3), (1,4), (2,3), (2,1), (1,0))
-    shape = ((m*a+x,m*b+y) for a,b in base_shape)
-    return dwg.polyline(points=shape)
+    return [(m*a+x,m*b+y) for a,b in base_shape]
+
+def hexagon_poly(dwg, x, y, m):
+    return dwg.polyline(points=hexagon(x, y, m))
 
 
 def hexes(image):
     '''
     draw 5 hexes
     '''
+
     m = 20
 
     # hex1 polyline
     hexes = image.add(image.g(id="hexes", fill=COLOR, stroke_width=0))
-    hexes.add(hexagon(image, 25, 0, m))
+    #hexes.add(hexagon_poly(image, 25, 0, m))
 
     # hex2 polyline
-    hexes.add(hexagon(image, 75, 0, m))
+    #hexes.add(hexagon_poly(image, 75, 0, m))
 
     # hex3 polyline
-    hexes.add(hexagon(image, 0, 70, m))
+    #hexes.add(hexagon_poly(image, 0, 70, m))
 
     # hex4 polyline
-    hexes.add(hexagon(image, 50, 70, m))
+    #hexes.add(hexagon_poly(image, 50, 70, m))
 
     # hex5 polyline
-    hexes.add(hexagon(image, 100, 70, m))
+    #hexes.add(hexagon_poly(image, 100, 70, m))
+
+    # TODO: use the coordinates from hexagon
+    #       still need to get a point to create the 45 degree bar
+    # find crossover between hex3[1,6] and hex1[4,5]
+    # (20, 70), (40, 90) x (45, 80), (65, 60)
+    # y = x + 50
+    # y = -x + 125
+    # x + 50 = -x + 125
+    # 2x = 125 - 50 = 75
+    # x = 37.5
+    # y = 87.5
+
+    # coordinates are ccw starting at the top (lowest y value)
+    h0 = [(45, 0), (25, 20), (25, 60), (45, 80), (65, 60), (65, 20), (45, 0)]
+    h1 = [(95, 0), (75, 20), (75, 60), (95, 80), (115, 60), (115, 20), (95, 0)]
+    h2 = [(20, 70), (0, 90), (0, 130), (20, 150), (40, 130), (40, 90), (20, 70)]
+    h3 = [(70, 70), (50, 90), (50, 130), (70, 150), (90, 130), (90, 90), (70, 70)]
+    h4 = [(120, 70), (100, 90), (100, 130), (120, 150), (140, 130), (140, 90), (120, 70)]
+
+    # h0-0, h0-1, h0-2, h0-3, (37.5, 87.5), h2-0, h2-1, h2-2, h2-3, h2-4, h3-2 ...
+    lines = [h0[0], h0[1], h0[2], h0[3], (37.5, 87.5), h2[0], h2[1], h2[2], h2[3], h2[4], h3[2]]
+    hexes.add(image.polyline(points=lines))
 
 
 def main():
