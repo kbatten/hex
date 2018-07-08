@@ -41,7 +41,7 @@ def intersect(p1, p2):
     return (x, y)
 
 
-def hexes(image):
+def run_outline_manual(image):
     '''
     draw 5 hexes
     '''
@@ -110,10 +110,74 @@ def hexes(image):
     fill.add(hexagon_poly(image, 100+3, 70+4, 17))
     fill.add(hexagon_poly(image, 100+3, 70+8, 17))
 
+
+def trace_line(lines, u=None, r=None, d=None, l=None, a=None):
+    assert(False)
+
+
+def trace_hexagon(lines, w, h, start, end, direction):
+    assert(direction == "cw")
+
+    sides = [
+        "top",
+        "top_right",
+        "bottom_right",
+        "bottom",
+        "bottom_left",
+        "top_left"
+    ]
+
+    sides_map = {}
+    for i, side in enumerate(sides):
+        sides_map[side] = i
+
+    start_index = sides_map[start]
+    end_index = sides_map[end]
+    if end_index < start_index:
+        end_index += len(sides)
+
+    for i in range(start_index, end_index):
+        # NOTE: always clockwise
+        if sides[i%len(sides)] == "top":
+            trace_line(lines, r=w/2, d=h/4)
+        elif sides[i%len(sides)] == "top_right":
+            trace_line(lines, d=h/2)
+        elif sides[i%len(sides)] == "bottom_right":
+            trace_line(lines, l=w/2, d=h/4)
+        elif sides[i%len(sides)] == "bottom":
+            trace_line(lines, l=w/2, u=h/4)
+        elif sides[i%len(sides)] == "bottom_left":
+            trace_line(lines, u=h/2)
+        elif sides[i%len(sides)] == "top_left":
+            trace_line(lines, r=w/2, u=h/4)
+
+
+def run_outline(image):
+    outline = image.add(image.g(id="outline", fill=COLOR, stroke_width=0))
+
+    lines = []
+
+    hw = 8
+    hh = 16
+    sep = 1
+
+    # TODO: internally trace_hexagon will call trace_line
+    trace_hexagon(lines, w=hw, h=hh, start="bottom", end="top_right", direction="cw")
+    trace_line(lines, r=sep)
+    trace_hexagon(lines, w=hw, h=hh, start="top_left", end="bottom_left", direction="cw")
+    trace_line(lines, a=225, d=sep)
+    trace_hexagon(lines, w=hw, h=hh, start="top", end="bottom_left", direction="cw")
+    trace_line(lines, l=sep)
+    trace_hexagon(lines, w=hw, h=hh, start="bottom_right", end="top_right", direction="cw")
+    trace_line(lines, a=45, d=sep)
+
+    # TODO: run_outline_manual does the cutout which may not generate the proper perceived lines
+
+
 def main():
     image = svgwrite.Drawing("hexa60n.svg")
 
-    hexes(image)
+    run_outline(image)
 
     image.save()
 
