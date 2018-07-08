@@ -8,6 +8,7 @@ generate the hexa60n svg avatar
 
 
 import sys
+import math
 
 import svgwrite
 
@@ -111,8 +112,44 @@ def run_outline_manual(image):
     fill.add(hexagon_poly(image, 100+3, 70+8, 17))
 
 
+def move_from_anchor(lines, anchor, u=None, r=None, d=None, l=None, a=None):
+    x = anchor[0]
+    y = anchor[1]
+
+    if u is not None:
+        y = y - u
+    if r is not None:
+        x = x + r
+    if d is not None:
+        y = y + d
+    if l is not None:
+        x = x - l
+    if a is not None:
+        x = x + a[1] * math.sin(math.radians(a[0]))
+        y = y - a[1] * math.cos(math.radians(a[0]))
+
+    lines += [(x, y)]
+
+
 def trace_line(lines, u=None, r=None, d=None, l=None, a=None):
-    assert(False)
+    assert(len(lines) > 0)
+
+    x = lines[-1][0]
+    y = lines[-1][1]
+
+    if u is not None:
+        y = y - u
+    if r is not None:
+        x = x + r
+    if d is not None:
+        y = y + d
+    if l is not None:
+        x = x - l
+    if a is not None:
+        x = x + a[1] * math.sin(math.radians(a[0]))
+        y = y - a[1] * math.cos(math.radians(a[0]))
+
+    lines += [(x, y)]
 
 
 def trace_hexagon(lines, w, h, start, end, direction):
@@ -157,21 +194,33 @@ def run_outline(image):
 
     lines = []
 
-    hw = 8
-    hh = 16
-    sep = 1
+    scale = 100
+
+    hw = scale / 2
+    hh = 2 * hw
+    sep = hw / 6
 
     # TODO: internally trace_hexagon will call trace_line
+    lines = [(hw * 2, hh)]
     trace_hexagon(lines, w=hw, h=hh, start="bottom", end="top_right", direction="cw")
     trace_line(lines, r=sep)
     trace_hexagon(lines, w=hw, h=hh, start="top_left", end="bottom_left", direction="cw")
-    trace_line(lines, a=225, d=sep)
+    trace_line(lines, a=(225, sep))
+    anchor = lines[-1]  # TODO: clean up
     trace_hexagon(lines, w=hw, h=hh, start="top", end="bottom_left", direction="cw")
     trace_line(lines, l=sep)
     trace_hexagon(lines, w=hw, h=hh, start="bottom_right", end="top_right", direction="cw")
-    trace_line(lines, a=45, d=sep)
+    trace_line(lines, a=(45, sep))
 
-    # TODO: run_outline_manual does the cutout which may not generate the proper perceived lines
+    outline.add(image.polygon(points=lines))
+
+    # TODO: fifth hexagon, need to anchor it
+    fifth = []
+    move_from_anchor(fifth, anchor, r=hw+sep)
+    trace_hexagon(fifth, w=hw, h=hh, start="top", end="top_left", direction="cw")
+
+    outline.add(image.polygon(points=fifth))
+
 
 
 def main():
