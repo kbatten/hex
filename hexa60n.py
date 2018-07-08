@@ -46,10 +46,10 @@ def hexes(image):
     draw 5 hexes
     '''
 
-    m = 20
+    #m = 20
 
     # hex1 polyline
-    hexes = image.add(image.g(id="hexes", fill=COLOR, stroke_width=0))
+    #hexes = image.add(image.g(id="hexes", fill=COLOR, stroke_width=0))
     #hexes.add(hexagon_poly(image, 25, 0, m))
 
     # hex2 polyline
@@ -89,9 +89,26 @@ def hexes(image):
     lines = [h0[0], h0[1], h0[2], h0[3], inter1, h2[0], h2[1], h2[2], h2[3], h2[4],
              h3[2], h3[3], h3[4], h3[5], h3[0],
              inter2, h1[3], h1[4], h1[5], h1[0], h1[1], h0[5], h0[0]]
-    hexes.add(image.polygon(points=lines))
-    hexes.add(image.polygon(points=h4))
+    outline = image.add(image.g(id="outline", fill=COLOR, stroke_width=0))
+    outline.add(image.polygon(points=lines))
+    outline.add(image.polygon(points=h4))
 
+
+    fill = image.add(image.g(id="fill", fill="white", stroke_width=0))
+    fill.add(hexagon_poly(image, 25+3, 0+4, 17))
+    fill.add(hexagon_poly(image, 25+3, 0+8, 17))
+
+    fill.add(hexagon_poly(image, 75+3, 0+4, 17))
+    fill.add(hexagon_poly(image, 75+3, 0+8, 17))
+
+    fill.add(hexagon_poly(image, 0+3, 70+4, 17))
+    fill.add(hexagon_poly(image, 0+3, 70+8, 17))
+
+    fill.add(hexagon_poly(image, 50+3, 70+4, 17))
+    fill.add(hexagon_poly(image, 50+3, 70+8, 17))
+
+    fill.add(hexagon_poly(image, 100+3, 70+4, 17))
+    fill.add(hexagon_poly(image, 100+3, 70+8, 17))
 
 def main():
     image = svgwrite.Drawing("hexa60n.svg")
